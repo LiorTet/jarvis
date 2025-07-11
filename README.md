@@ -10,16 +10,15 @@ Personal Jarvis assistant project.
 - Integrated Ollama LLM model (`phi3:mini`) for text-based responses.
 - Added text-to-speech output with English (US) voice using `pyttsx3`.
 - Automatic model installation if missing.
+- Dynamic hearing with background sound and time threshold.
 - Clean flow: speech input → LLM response → spoken output.
 
 ---
 
 ## 🚀 Next Steps
 
-- Refine Ollama usage for CPU performance (explore smaller models or optimizations).
 - Add wake word detection with [pvporcupine](https://github.com/Picovoice/porcupine) for hands-free activation.
 - Potentially add conversational context and continuous dialogue.
-- Update the recording to be dynamic.
 
 ---
 
