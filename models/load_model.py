@@ -1,6 +1,8 @@
 import subprocess
+import jarvis.config.settings as cfg
 
-OLLAMA_PATH = r"C:\Users\Lior\AppData\Local\Programs\Ollama\ollama.exe"
+
+OLLAMA_PATH = cfg.OLLAMA_PATH
 
 
 def is_model_installed(model="phi3:mini") -> bool:

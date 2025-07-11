@@ -3,7 +3,13 @@ import sounddevice as sd
 import numpy as np
 import scipy.io.wavfile
 import tempfile
+import time
 from typing import Optional
+
+
+CHUNK_DURATION = 0.5
+SILENCE_THRESHOLD = 0.005
+SILENCE_DURATION = 2.0
 
 
 def record_audio(duration: int, sample_rate: int = 16000) -> np.ndarray:
@@ -27,16 +33,32 @@ def transcribe_audio(filepath: str, model) -> str:
     return result["text"]
 
 
-def transcribe_audio_from_array(
-    audio: np.ndarray, model, sample_rate: int = 16000
-) -> str:
-    """
-    Transcribes raw audio (NumPy array) without saving to disk.
-    """
-    # Ensure it's float32 mono audio
-    if audio.ndim > 1:
-        audio = audio[:, 0]
-    audio = audio.astype("float32")
+def rms(audio_chunk: np.ndarray) -> float:
+    return np.sqrt(np.mean(np.square(audio_chunk)))
 
-    result = model.transcribe(audio, fp16=False)  # fp16=False if running on CPU
-    return result["text"]
+
+def record_audio(sample_rate: int = 16000) -> np.ndarray:
+    print("🎙️ Recording... Speak now.")
+    frames = []
+    silence_start = None
+    chunk_samples = int(CHUNK_DURATION * sample_rate)
+
+    with sd.InputStream(channels=1, samplerate=sample_rate, dtype="float32") as stream:
+        while True:
+            data, _ = stream.read(chunk_samples)
+            data = data.flatten()
+            frames.append(data)
+
+            current_rms = rms(data)
+            if current_rms < SILENCE_THRESHOLD:
+                if silence_start is None:
+                    silence_start = time.time()
+                elif time.time() - silence_start > SILENCE_DURATION:
+                    print("Silence detected, stopping recording.")
+                    break
+            else:
+                silence_start = None  # reset silence timer
+
+    audio = np.concatenate(frames)
+    print("✅ Recording complete.")
+    return audio
