@@ -3,3 +3,4 @@ openai-whisper
 sounddevice
 numpy
 scipy
+pyttsx3
