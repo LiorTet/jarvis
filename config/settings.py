@@ -1,3 +1,5 @@
+import os
+
 # Audio & Whisper settings
 SAMPLE_RATE = 16000
 DURATION = 5
@@ -15,3 +17,7 @@ OLLAMA_MODEL = "llama3.1"  # phi3:mini
 
 # Special words
 EXIT_COMMANDS = {"exit", "quit", "shutdown", "stop", "bye"}
+
+# Memory
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DATA_DIR = os.path.join(BASE_DIR, "data")
