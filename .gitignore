@@ -2,3 +2,4 @@ env_jarvis/
 __pycache__/
 *.pyc
 ffmpeg*
+fine-tune/task-choose/task_choose_env*
