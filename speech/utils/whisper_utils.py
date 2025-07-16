@@ -54,7 +54,7 @@ def record_audio(sample_rate: int = 16000) -> np.ndarray:
                 if silence_start is None:
                     silence_start = time.time()
                 elif time.time() - silence_start > SILENCE_DURATION:
-                    print("Silence detected, stopping recording.")
+                    print("End of talking.")
                     break
             else:
                 silence_start = None  # reset silence timer
