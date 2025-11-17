@@ -1,3 +1,7 @@
+from jarvis.config import settings as cfg
+
+EXIT_COMMANDS = cfg.EXIT_COMMANDS
+
 def exit_cond() -> bool:
     """
     Function to initialize the listening of main flow.
