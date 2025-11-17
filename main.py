@@ -15,17 +15,6 @@ import re
 EXIT_COMMANDS = cfg.EXIT_COMMANDS
 
 
-def extract_first_json(response: str):
-    """
-    Extracts the first valid JSON object from the LLM response.
-    Works even if extra text or reasoning is present.
-    """
-    match = re.search(r"\{.*?\}", response, re.DOTALL)
-    if match:
-        return match.group(0)
-    raise ValueError(f"No JSON object found in response: {response}")
-
-
 if __name__ == "__main__":
     # Models installation
     install_model_if_needed(cfg.OLLAMA_MODEL)
