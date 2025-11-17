@@ -1,8 +1,7 @@
-from jarvis.config import settings as cfg
-from .speech import transcribe_from_mic
+from .config import settings as cfg
 from .models import is_model_installed, install_model_if_needed, ask_ollama
-from .speech import speak
-from .tools import ToolManager, Memory
+from .speech import speak, listen
+from .tools import ToolManager, Memory, exit_cond
 from .prompt import build_command_identification_prompt, build_task_execution_prompt
 from .prompt import COMMAND_EXAMPLES, COMMAND_INSTRUCTIONS
 
@@ -26,18 +25,11 @@ if __name__ == "__main__":
     while True:
         try:
             # Listen
-            text = ""
-            while not text.strip():
-                print("Waiting for valid speech input...")
-                text = transcribe_from_mic().strip()
-
-            print("You said:", text)
+            text = listen()
 
             # Check for exit condition
-            cleaned_text = text.lower().strip()
-            if any(re.search(rf"\b{kw}\b", cleaned_text) for kw in EXIT_COMMANDS):
-                print("Exiting Jarvis. Goodbye!")
-                speak("Goodbye!")
+            exit_value = exit_cond()
+            if exit_value:
                 break
 
             # Build prompt to define task
@@ -53,7 +45,6 @@ if __name__ == "__main__":
                     text=json_identified_task, 
                     model=IdentifiedCommand
                 )
-                # Access the validated command directly
                 task = identified_command_obj.command 
 
             except Exception as e:
