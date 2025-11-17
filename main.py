@@ -5,7 +5,7 @@ from .tools import ToolManager, Memory, exit_cond
 from .prompt import build_command_identification_prompt, build_task_execution_prompt
 from .prompt import COMMAND_EXAMPLES, COMMAND_INSTRUCTIONS
 
-from pydantic_ai import AI
+from pydantic_ai import Agent
 from .schemas import IdentifiedCommand
 
 import json
@@ -20,7 +20,13 @@ if __name__ == "__main__":
 
     memory = Memory()
     tool_manager = ToolManager()
-    ai = AI()
+    
+
+    agent = Agent(
+        cfg.OLLAMA_MODEL,
+        output_type=IdentifiedCommand,
+        system_prompt="Use the following schema to decide which command to run.",
+    )
 
     print("Jarvis is now running. Say something...")
     while True:
@@ -36,21 +42,11 @@ if __name__ == "__main__":
             # Build prompt to define task
             prompt_identified_task = build_command_identification_prompt(text)
 
-            # Get model response to which task
-            json_identified_task = ask_ollama(prompt_identified_task)
+            result = agent.run_sync(prompt_identified_task)
 
-            # Execute task prompt
-            print(json_identified_task)
-            try:
-                identified_command_obj: IdentifiedCommand = ai.extract(
-                    text=json_identified_task, model=IdentifiedCommand
-                )
-                task = identified_command_obj.command
-
-            except Exception as e:
-                print(f"Error parsing identified command with PydanticAI: {e}")
-                speak("I couldn't understand what task you wanted. Please try again.")
-                continue  # Skip to next loop iteration
+            # `result.data` is now an instance of IdentifiedCommand, validated
+            identified_command_obj: IdentifiedCommand = result.data
+            task = identified_command_obj.command
 
             prompt_execute_task = build_task_execution_prompt(
                 text,
