@@ -20,7 +20,6 @@ if __name__ == "__main__":
 
     memory = Memory()
     tool_manager = ToolManager()
-    
 
     agent = Agent(
         cfg.OLLAMA_MODEL,
@@ -50,7 +49,7 @@ if __name__ == "__main__":
 
             prompt_execute_task = build_task_execution_prompt(
                 text,
-                json.loads(json_identified_task)["command"],
+                task,
                 memory,
                 COMMAND_INSTRUCTIONS[task],
                 COMMAND_EXAMPLES[task],
