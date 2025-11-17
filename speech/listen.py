@@ -1,4 +1,5 @@
-import transcribe_from_mic
+from jarvis.speech.transcriber import transcribe_from_mic
+
 
 def listen() -> str:
     """
