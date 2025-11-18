@@ -14,6 +14,8 @@ MIN_RECORDING_DURATION = 2.0
 # Ollama
 OLLAMA_PATH = r"C:\Users\Lior\AppData\Local\Programs\Ollama\ollama.exe"
 OLLAMA_MODEL = "llama3.1:latest"  # phi3:mini
+OLLAMA_BASE_URL = "http://127.0.0.1:11434/v1"
+
 
 # Special words
 EXIT_COMMANDS = {"exit", "quit", "shutdown", "stop", "bye"}

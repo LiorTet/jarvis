@@ -12,16 +12,15 @@ import re
 
 EXIT_COMMANDS = cfg.EXIT_COMMANDS
 
-# OLLAMA url
-OLLAMA_BASE_URL = "http://127.0.0.1:11434"
 
 if __name__ == "__main__":
-
     memory = Memory()
-    
+
     tool_manager = ToolManager()
 
-    agent = agent_task_classification(cfg.OLLAMA_MODEL, IdentifiedCommand)
+    agent = agent_task_classification(
+        cfg.OLLAMA_MODEL, cfg.OLLAMA_BASE_URL, IdentifiedCommand
+    )
 
     print("Jarvis is now running. Say something...")
     while True:
@@ -40,9 +39,8 @@ if __name__ == "__main__":
             result = agent.run_sync(prompt_identified_task)
             identified_command_obj: IdentifiedCommand = result.output
             task = identified_command_obj.command
-            print(task)
 
-            if task = "UNRELATED":
+            if task == "UNRELATED":
                 print("Will return generic answer")
             else:
                 prompt_execute_task = build_task_execution_prompt(
@@ -54,16 +52,16 @@ if __name__ == "__main__":
                 )
 
             # Get model response to execute task
-            json_execute_task = ask_ollama(prompt_execute_task)
+            # json_execute_task = ask_ollama(prompt_execute_task)
 
-            print(json_execute_task)
+            # print(json_execute_task)
 
             # Let tool manager handle external tools (including JSON parsing)
             # final_output = tool_manager.process_response(full_prompt)
 
-            if json_execute_task:
-                print("Jarvis says:", json_execute_task)
-                speak(json_execute_task)
+            # if json_execute_task:
+            #     print("Jarvis says:", json_execute_task)
+            #     speak(json_execute_task)
 
         except KeyboardInterrupt:
             print("\nInterrupted by user.")

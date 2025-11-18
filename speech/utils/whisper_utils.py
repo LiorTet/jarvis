@@ -18,7 +18,7 @@ def record_audio(duration: int, sample_rate: int = 16000) -> np.ndarray:
         int(duration * sample_rate), samplerate=sample_rate, channels=1, dtype="float32"
     )
     sd.wait()
-    print("✅ Recording complete.")
+    print("Recording complete.")
     return np.squeeze(audio)  # squeeze shape from (N, 1) → (N,)
 
 
