@@ -19,9 +19,9 @@ COMMAND_INSTRUCTIONS = {
                 - If the user explicitly asks to clear "all" tasks, the "date" MUST be "all".
                 - Otherwise (e.g., "Clear my tasks"), the "date" MUST be "today".
                 """,
-    "UNRELATED": """
-                Answer normally.
-                """
+    # "UNRELATED": """
+    #             Answer normally.
+    #             """
     # Add other commands here as needed
     # "OTHER_COMMAND": "Instructions for OTHER_COMMAND..."
 }

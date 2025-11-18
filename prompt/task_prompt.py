@@ -1,28 +1,36 @@
 # jarvis/prompt.py
 import json
 from datetime import date, timedelta
+from jarvis.schemas import IdentifiedCommand
 
 # Helper for current date context (still useful for examples in the second prompt later)
 today_dt = date.today()
 tomorrow_dt = today_dt + timedelta(days=1)
 
+IDENTIFICATION_SCHEMA = IdentifiedCommand.schema_json(indent=2)
+
 
 def build_command_identification_prompt(user_input: str) -> str:
     """
     Builds a prompt for the LLM to identify the high-level command from user input.
-    The LLM's ONLY job is to output a JSON object with a 'command' key.
+    The LLM's ONLY job is to output a JSON object matching the IdentifiedCommand schema.
     """
     system_prompt = f"""
         You are a command identifier AI. Your ONLY job is to analyze the user's text and determine the high-level command.
-        Do NOT add any explanations, introductory text, or any text whatsoever outside of the JSON object.
+        
+        **CRITICAL INSTRUCTION**: Your output MUST be a single JSON object that strictly conforms to the JSON schema provided below.
+        
+        Do NOT add any explanations, introductory text, or any text whatsoever outside of the JSON object. 
+        Do NOT use markdown (e.g., ```json) around the JSON.
 
-        Your output MUST be a single JSON object with one key: "command".
+        ## JSON Schema to Follow:
+        {IDENTIFICATION_SCHEMA}
 
-        The "command" can be one of the following strings:
-        - "ADD_TASK" (if the user wants to add something to their task list)
-        - "LIST_TASKS" (if the user wants to see their tasks)
-        - "CLEAR_TASKS" (if the user wants to remove tasks)
-        - "UNRELATED" (if the user's request does not fit any of the above commands)
+        ## Valid 'command' values:
+        - "ADD_TASK"
+        - "LIST_TASKS"
+        - "CLEAR_TASKS"
+        - "UNRELATED"
 
         ## Examples:
 
@@ -31,15 +39,6 @@ def build_command_identification_prompt(user_input: str) -> str:
 
         User: What do I have to do?
         Assistant: {{"command": "LIST_TASKS"}}
-
-        User: List my tasks for tomorrow.
-        Assistant: {{"command": "LIST_TASKS"}}
-
-        User: Clear my tasks for tomorrow.
-        Assistant: {{"command": "CLEAR_TASKS"}}
-
-        User: Clear all my tasks.
-        Assistant: {{"command": "CLEAR_TASKS"}}
 
         User: what is the capital of Spain
         Assistant: {{"command": "UNRELATED"}}
