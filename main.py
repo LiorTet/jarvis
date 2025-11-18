@@ -5,8 +5,9 @@ from .tools import ToolManager, Memory, exit_cond
 from .prompt import build_command_identification_prompt, build_task_execution_prompt
 from .prompt import COMMAND_EXAMPLES, COMMAND_INSTRUCTIONS
 
+from pydantic_ai.models.openai import OpenAIChatModel
+from pydantic_ai.providers.ollama import OllamaProvider
 from pydantic_ai import Agent
-from pydantic_ai.models.ollama import OllamaModel
 from .schemas import IdentifiedCommand
 
 import json
@@ -24,9 +25,9 @@ if __name__ == "__main__":
     memory = Memory()
     tool_manager = ToolManager()
 
-    ollama_model = OllamaModel(
-        model=cfg.OLLAMA_MODEL,
-        base_url="http://127.0.0.1:11434"
+    ollama_model = OpenAIChatModel(
+        model_name=cfg.OLLAMA_MODEL,
+        provider=OllamaProvider(base_url="http://127.0.0.1:11434/v1"),
     )
 
     agent = Agent(
