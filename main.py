@@ -1,13 +1,10 @@
 from .config import settings as cfg
-from .models import is_model_installed, install_model_if_needed, ask_ollama
+from .agents import agent_task_classification
 from .speech import speak, listen
 from .tools import ToolManager, Memory, exit_cond
 from .prompt import build_command_identification_prompt, build_task_execution_prompt
 from .prompt import COMMAND_EXAMPLES, COMMAND_INSTRUCTIONS
 
-from pydantic_ai.models.openai import OpenAIChatModel
-from pydantic_ai.providers.openai import OpenAIProvider
-from pydantic_ai import Agent
 from .schemas import IdentifiedCommand
 
 import json
@@ -19,32 +16,18 @@ EXIT_COMMANDS = cfg.EXIT_COMMANDS
 OLLAMA_BASE_URL = "http://127.0.0.1:11434"
 
 if __name__ == "__main__":
-    # Models installation
-    # install_model_if_needed(cfg.OLLAMA_MODEL)
 
     memory = Memory()
+    
     tool_manager = ToolManager()
 
-    ollama_provider = OpenAIProvider(
-        base_url="http://127.0.0.1:11434/v1", api_key="ollama_dummy_key"
-    )
-
-    ollama_model = OpenAIChatModel(
-        model_name=cfg.OLLAMA_MODEL,
-        provider=ollama_provider,
-    )
-
-    agent = Agent(
-        ollama_model,
-        output_type=IdentifiedCommand,
-        system_prompt="Use the following schema to decide which command to run.",
-    )
+    agent = agent_task_classification(cfg.OLLAMA_MODEL, IdentifiedCommand)
 
     print("Jarvis is now running. Say something...")
     while True:
         try:
-            text = ""
             # Listen
+            text = ""
             text = listen()
 
             # Check for exit condition
@@ -52,21 +35,23 @@ if __name__ == "__main__":
             if exit_value:
                 break
 
-            # Build prompt to define task
+            # Build prompt to define task and call agent
             prompt_identified_task = build_command_identification_prompt(text)
             result = agent.run_sync(prompt_identified_task)
-
             identified_command_obj: IdentifiedCommand = result.output
-
             task = identified_command_obj.command
             print(task)
-            prompt_execute_task = build_task_execution_prompt(
-                text,
-                task,
-                memory,
-                COMMAND_INSTRUCTIONS[task],
-                COMMAND_EXAMPLES[task],
-            )
+
+            if task = "UNRELATED":
+                print("Will return generic answer")
+            else:
+                prompt_execute_task = build_task_execution_prompt(
+                    text,
+                    task,
+                    memory,
+                    COMMAND_INSTRUCTIONS[task],
+                    COMMAND_EXAMPLES[task],
+                )
 
             # Get model response to execute task
             json_execute_task = ask_ollama(prompt_execute_task)
