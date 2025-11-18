@@ -6,6 +6,7 @@ from .prompt import build_command_identification_prompt, build_task_execution_pr
 from .prompt import COMMAND_EXAMPLES, COMMAND_INSTRUCTIONS
 
 from pydantic_ai import Agent
+from pydantic_ai.models.ollama import OllamaModel
 from .schemas import IdentifiedCommand
 
 import json
@@ -18,13 +19,18 @@ OLLAMA_BASE_URL="http://127.0.0.1:11434"
 
 if __name__ == "__main__":
     # Models installation
-    install_model_if_needed(cfg.OLLAMA_MODEL)
+    #install_model_if_needed(cfg.OLLAMA_MODEL)
 
     memory = Memory()
     tool_manager = ToolManager()
 
+    ollama_model = OllamaModel(
+        model=cfg.OLLAMA_MODEL,
+        base_url="http://127.0.0.1:11434"
+    )
+
     agent = Agent(
-        cfg.OLLAMA_MODEL,
+        ollama_model,
         output_type=IdentifiedCommand,
         system_prompt="Use the following schema to decide which command to run.",
     )
