@@ -1,8 +1,12 @@
+import re
+
 from jarvis.config import settings as cfg
+from jarvis.speech import speak
 
 EXIT_COMMANDS = cfg.EXIT_COMMANDS
 
-def exit_cond() -> bool:
+
+def exit_cond(text: str) -> bool:
     """
     Function to initialize the listening of main flow.
     """

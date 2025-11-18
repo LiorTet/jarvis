@@ -6,7 +6,7 @@ from .prompt import build_command_identification_prompt, build_task_execution_pr
 from .prompt import COMMAND_EXAMPLES, COMMAND_INSTRUCTIONS
 
 from pydantic_ai.models.openai import OpenAIChatModel
-from pydantic_ai.providers.ollama import OllamaProvider
+from pydantic_ai.providers.openai import OpenAIProvider
 from pydantic_ai import Agent
 from .schemas import IdentifiedCommand
 
@@ -16,18 +16,22 @@ import re
 EXIT_COMMANDS = cfg.EXIT_COMMANDS
 
 # OLLAMA url
-OLLAMA_BASE_URL="http://127.0.0.1:11434"
+OLLAMA_BASE_URL = "http://127.0.0.1:11434"
 
 if __name__ == "__main__":
     # Models installation
-    #install_model_if_needed(cfg.OLLAMA_MODEL)
+    # install_model_if_needed(cfg.OLLAMA_MODEL)
 
     memory = Memory()
     tool_manager = ToolManager()
 
+    ollama_provider = OpenAIProvider(
+        base_url="http://127.0.0.1:11434/v1", api_key="ollama_dummy_key"
+    )
+
     ollama_model = OpenAIChatModel(
         model_name=cfg.OLLAMA_MODEL,
-        provider=OllamaProvider(base_url="http://127.0.0.1:11434/v1"),
+        provider=ollama_provider,
     )
 
     agent = Agent(
@@ -39,23 +43,23 @@ if __name__ == "__main__":
     print("Jarvis is now running. Say something...")
     while True:
         try:
+            text = ""
             # Listen
             text = listen()
 
             # Check for exit condition
-            exit_value = exit_cond()
+            exit_value = exit_cond(text)
             if exit_value:
                 break
 
             # Build prompt to define task
             prompt_identified_task = build_command_identification_prompt(text)
-
             result = agent.run_sync(prompt_identified_task)
 
-            # `result.data` is now an instance of IdentifiedCommand, validated
-            identified_command_obj: IdentifiedCommand = result.data
-            task = identified_command_obj.command
+            identified_command_obj: IdentifiedCommand = result.output
 
+            task = identified_command_obj.command
+            print(task)
             prompt_execute_task = build_task_execution_prompt(
                 text,
                 task,

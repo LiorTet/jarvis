@@ -13,7 +13,7 @@ MIN_RECORDING_DURATION = 2.0
 
 # Ollama
 OLLAMA_PATH = r"C:\Users\Lior\AppData\Local\Programs\Ollama\ollama.exe"
-OLLAMA_MODEL = "ollama:llama3.1"  # phi3:mini
+OLLAMA_MODEL = "llama3.1:latest"  # phi3:mini
 
 # Special words
 EXIT_COMMANDS = {"exit", "quit", "shutdown", "stop", "bye"}
