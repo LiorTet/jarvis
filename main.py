@@ -13,6 +13,8 @@ import re
 
 EXIT_COMMANDS = cfg.EXIT_COMMANDS
 
+# OLLAMA url
+OLLAMA_BASE_URL="http://127.0.0.1:11434"
 
 if __name__ == "__main__":
     # Models installation
